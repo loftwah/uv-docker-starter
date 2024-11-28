@@ -6,6 +6,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  packages: write  # Allows pushing to GHCR
+  contents: read   # Allows reading the repository content
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
@@ -35,7 +39,12 @@ jobs:
           context: ./examples/official
           file: ./examples/official/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository_owner }}/uv-official:latest
+          platforms: |
+            linux/amd64
+            linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/uv-official:latest
+            ghcr.io/${{ github.repository_owner }}/uv-official:${{ github.sha }}
           cache-from: type=gha,scope=uv-official
           cache-to: type=gha,mode=min,scope=uv-official
           outputs: type=docker,dest=/tmp/uv-official.tar
@@ -50,7 +59,12 @@ jobs:
           context: ./examples/custom
           file: ./examples/custom/Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ghcr.io/${{ github.repository_owner }}/uv-custom:latest
+          platforms: |
+            linux/amd64
+            linux/arm64
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/uv-custom:latest
+            ghcr.io/${{ github.repository_owner }}/uv-custom:${{ github.sha }}
           cache-from: type=gha,scope=uv-custom
           cache-to: type=gha,mode=min,scope=uv-custom
           outputs: type=docker,dest=/tmp/uv-custom.tar
