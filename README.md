@@ -1,96 +1,171 @@
-# UV Docker with GHCR
+# UV Docker Starter
 
-This repository demonstrates building and pushing container images for UV examples to **GitHub Container Registry (GHCR)**.
+This repository provides examples of integrating the blazing-fast UV Python package manager into Docker-based workflows. It includes both a quick-start approach using **official UV images** and a **custom integration** approach optimized for production use.
 
-## Examples
+## Features
 
-### 1. Official UV Image
+- Examples for **official UV images** and **custom UV integration**
+- Docker Compose setup for running both examples simultaneously
+- Multi-platform support (Linux `amd64`, `arm64`)
+- Pre-configured CI/CD pipeline with GitHub Actions
+- Secure, optimized, and reproducible builds
 
-The `uv-official` image demonstrates using the official UV Docker image.
+---
 
-### 2. Custom UV Integration
+## Getting Started
 
-The `uv-custom` image uses a custom integration for optimized builds.
-
-## Running Locally
-
-### Use Bash Scripts
-
-You can use the provided bash scripts to build and run each example:
-
-#### Build and run the `official` example:
+### Clone the Repository
 
 ```bash
-./build-official.sh
+git clone https://github.com/loftwah/uv-docker-starter.git
+cd uv-docker-starter
 ```
 
-#### Build and run the `custom` example:
+### Prerequisites
+
+- Docker version 20.10 or higher
+- Docker Compose version 2.x or higher
+- Python 3.13 (optional, for local testing)
+- At least 4GB of RAM and 10GB of free disk space
+
+Check your versions:
 
 ```bash
-./build-custom.sh
+docker --version
+docker compose version
+python --version
 ```
 
-### Use Docker Compose
+---
 
-To run both examples simultaneously:
+## Running the Examples
+
+The repository includes two examples that can run simultaneously:
+
+1. **Official UV Docker Image** (`examples/official`)
+2. **Custom UV Integration** (`examples/custom`)
+
+### Run Both Examples with Docker Compose
+
+Use Docker Compose to build and run both services simultaneously:
 
 ```bash
-docker compose up
+docker compose up --build
 ```
 
-Access the services:
+#### Test the Services
 
-- Official: [http://localhost:8000](http://localhost:8000)
-- Custom: [http://localhost:8001](http://localhost:8001)
+Once the containers are running, use `curl` or any HTTP client to test both services.
 
-## How the Images Are Built
+- **Official Example (Port 8000):**
 
-### Official Example (`uv-official`)
+  ```bash
+  curl localhost:8000
+  ```
 
-- **Dependencies** are defined in `examples/official/requirements.txt`.
-- **Dependencies** are installed globally using `uv pip install --system -r requirements.txt`.
-- The application (`examples/official/app/main.py`) is served via `uvicorn`.
+  **Expected Output:**
 
-### Custom Example (`uv-custom`)
+  ```json
+  { "message": "Hello, UV Official Image!" }
+  ```
 
-- Uses `examples/custom/pyproject.toml` to define dependencies.
-- Dependencies are installed using `uv pip install --system`.
-- The application (`examples/custom/app/main.py`) is served via `uvicorn`.
+- **Custom Example (Port 8001):**
 
-### Multi-Platform Build
+  ```bash
+  curl localhost:8001
+  ```
 
-Both examples are configured for multi-platform builds (e.g., `linux/amd64`, `linux/arm64`) using Docker Buildx. This is enabled in both the CI workflow and the provided bash scripts.
+  **Expected Output:**
 
-## Automated Workflow
+  ```json
+  { "message": "Hello, UV Custom Integration!" }
+  ```
 
-On each push to the `main` branch, GitHub Actions:
+#### Stop the Services
 
-1. Builds the Docker images for both examples using Buildx.
-2. Pushes the images to GHCR:
-   - `ghcr.io/loftwah/uv-official:latest`
-   - `ghcr.io/loftwah/uv-custom:latest`
+When you're done, stop the containers:
 
-## Troubleshooting
+```bash
+docker compose down
+```
 
-1. **Build Errors for `uv-official`:**
-   Ensure `requirements.txt` exists in the `examples/official` directory.
+---
 
-2. **Build Errors for `uv-custom`:**
-   Ensure `pyproject.toml` and `uv.lock` exist in the `examples/custom` directory.
+## CI/CD Workflow
 
-3. **Check Logs:**
-   Run `docker compose logs` for detailed error information.
+The repository includes a pre-configured GitHub Actions workflow that automates:
 
-4. **Rebuild Images:**
-   If issues persist, rebuild images:
-   ```bash
-   docker compose build
-   ```
+1. Building and pushing Docker images to GitHub Container Registry (GHCR)
+2. Running tests to verify functionality
+3. Supporting multi-platform builds (`amd64`, `arm64`)
 
-## Next Steps
+View the workflow: [`.github/workflows/build-and-push.yml`](.github/workflows/build-and-push.yml)
 
-1. Extend the examples to include more complex applications.
-2. Customise the CI/CD workflow to deploy built images.
-3. Optimise the Dockerfiles for production-ready configurations.
+---
+
+## Repository Structure
+
+```plaintext
+uv-docker-starter/
+├── README.md               # Guide and instructions
+├── docker-compose.yml      # Compose configurations for examples
+├── examples/
+│   ├── official/           # Example using official UV Docker image
+│   │   ├── Dockerfile
+│   │   ├── app/
+│   │   │   └── main.py
+│   │   └── requirements.txt
+│   ├── custom/             # Example with custom UV integration
+│   │   ├── Dockerfile
+│   │   ├── pyproject.toml
+│   │   ├── uv.lock
+│   │   └── app/
+│   │       └── main.py
+├── .github/
+│   ├── workflows/
+│   │   └── build-and-push.yml # CI/CD pipeline for GitHub Actions
+```
+
+---
+
+## Testing
+
+You can test both services simultaneously using the following commands:
+
+- **Official Example (Port 8000):**
+
+  ```bash
+  curl localhost:8000
+  ```
+
+  **Expected Output:**
+
+  ```json
+  { "message": "Hello, UV Official Image!" }
+  ```
+
+- **Custom Example (Port 8001):**
+
+  ```bash
+  curl localhost:8001
+  ```
+
+  **Expected Output:**
+
+  ```json
+  { "message": "Hello, UV Custom Integration!" }
+  ```
+
+---
+
+## Contributing
+
+Feel free to open issues or submit pull requests for improvements or bug fixes.
+
+---
+
+## License
+
+This repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ---
