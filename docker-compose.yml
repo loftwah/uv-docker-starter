@@ -1,0 +1,14 @@
+services:
+  official:
+    build:
+      context: ./examples/official
+    ports:
+      - "8000:8000"
+    image: ghcr.io/loftwah/uv-official:latest
+
+  custom:
+    build:
+      context: ./examples/custom
+    ports:
+      - "8001:8000"
+    image: ghcr.io/loftwah/uv-custom:latest
