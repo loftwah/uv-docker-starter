@@ -38,12 +38,44 @@ python --version
 
 ---
 
+## Repository Structure
+
+```plaintext
+.
+├── .github
+│   └── workflows
+│       └── build-and-push.yml    # GitHub Actions CI/CD workflow
+├── LICENSE
+├── README.md                     # This documentation file
+├── docker-compose.yml            # Local development compose configuration
+├── examples
+│   ├── custom                    # Custom UV integration example
+│   │   ├── Dockerfile
+│   │   ├── app
+│   │   │   └── main.py
+│   │   ├── pyproject.toml       # Project dependencies and metadata
+│   │   └── uv.lock             # Locked dependencies for reproducibility
+│   └── official                 # Official UV image example
+│       ├── Dockerfile
+│       ├── app
+│       │   └── main.py
+│       └── requirements.txt     # Python dependencies
+```
+
 ## Running the Examples
 
 The repository includes two examples that can run simultaneously:
 
 1. **Official UV Docker Image** (`examples/official`)
+
+   - Uses the official UV Python image
+   - Demonstrates simple integration
+   - Runs on port 8000
+
 2. **Custom UV Integration** (`examples/custom`)
+   - Shows advanced UV integration
+   - Uses multi-stage builds
+   - Runs on port 8001
 
 ### Run Both Examples with Docker Compose
 
@@ -91,81 +123,57 @@ docker compose down
 
 ---
 
-## CI/CD Workflow
+## CI/CD Pipeline
 
 The repository includes a pre-configured GitHub Actions workflow that automates:
 
-1. Building and pushing Docker images to GitHub Container Registry (GHCR)
-2. Running tests to verify functionality
-3. Supporting multi-platform builds (`amd64`, `arm64`)
+1. Building Docker images for both examples
+2. Pushing images to GitHub Container Registry (GHCR)
+3. Running automated tests to verify functionality
+4. Using build caching for faster deployments
+
+### Workflow Features
+
+- **Multi-stage Builds**: Optimized image sizes
+- **Caching**: Faster builds using GitHub Actions cache
+- **Automated Testing**: Verifies both services work correctly
+- **GHCR Integration**: Automatic pushing of container images
+- **Security**: Proper permissions and secret handling
 
 View the workflow: [`.github/workflows/build-and-push.yml`](.github/workflows/build-and-push.yml)
 
----
+### Container Registry
 
-## Repository Structure
+Images are published to GitHub Container Registry:
 
-```plaintext
-uv-docker-starter/
-├── README.md               # Guide and instructions
-├── docker-compose.yml      # Compose configurations for examples
-├── examples/
-│   ├── official/           # Example using official UV Docker image
-│   │   ├── Dockerfile
-│   │   ├── app/
-│   │   │   └── main.py
-│   │   └── requirements.txt
-│   ├── custom/             # Example with custom UV integration
-│   │   ├── Dockerfile
-│   │   ├── pyproject.toml
-│   │   ├── uv.lock
-│   │   └── app/
-│   │       └── main.py
-├── .github/
-│   ├── workflows/
-│   │   └── build-and-push.yml # CI/CD pipeline for GitHub Actions
-```
+- `ghcr.io/[owner]/uv-official:latest`
+- `ghcr.io/[owner]/uv-custom:latest`
+
+Each push also creates a SHA-tagged version for immutability.
 
 ---
 
-## Testing
+## Development vs CI Testing
 
-You can test both services simultaneously using the following commands:
+The repository uses two compose configurations:
 
-- **Official Example (Port 8000):**
+1. `docker-compose.yml` - For local development with build contexts
+2. A CI-generated compose file for testing the built images
 
-  ```bash
-  curl localhost:8000
-  ```
-
-  **Expected Output:**
-
-  ```json
-  { "message": "Hello, UV Official Image!" }
-  ```
-
-- **Custom Example (Port 8001):**
-
-  ```bash
-  curl localhost:8001
-  ```
-
-  **Expected Output:**
-
-  ```json
-  { "message": "Hello, UV Custom Integration!" }
-  ```
+This separation allows for different workflows in development and CI while maintaining consistent behavior.
 
 ---
 
 ## Contributing
 
-Feel free to open issues or submit pull requests for improvements or bug fixes.
+Feel free to open issues or submit pull requests for improvements or bug fixes. Please ensure:
+
+- Code follows project structure
+- Documentation is updated
+- Tests pass in CI
 
 ---
 
 ## License
 
 This repository is licensed under the MIT License. See [LICENSE](LICENSE) for details.
-
----
